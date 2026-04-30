@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Football Game</title>
+    <style>
+        canvas {
+            background: green;
+            display: block;
+            margin: auto;
+            border: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+<canvas id="gameCanvas" width="600" height="400"></canvas>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+// Player
+let player = { x: 50, y: 200, width: 30, height: 30, color: "blue", speed: 5 };
+
+// Ball
+let ball = { x: 300, y: 200, radius: 10, color: "white", dx: 2, dy: 2 };
+
+// Goal
+let goal = { x: 550, y: 150, width: 30, height: 100, color: "yellow" };
+
+// Keyboard input
+let keys = {};
+document.addEventListener("keydown", (e) => keys[e.key] = true);
+document.addEventListener("keyup", (e) => keys[e.key] = false);
+
+function update() {
+    // Move player
+    if(keys["ArrowUp"] && player.y > 0) player.y -= player.speed;
+    if(keys["ArrowDown"] && player.y + player.height < canvas.height) player.y += player.speed;
+    if(keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
+    if(keys["ArrowRight"] && player.x + player.width < canvas.width) player.x += player.speed;
+
+    // Ball movement
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+
+    // Bounce off walls
+    if(ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) ball.dy *= -1;
+    if(ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) ball.dx *= -1;
+
+    // Collision with player
+    if(ball.x + ball.radius > player.x && ball.x - ball.radius < player.x + player.width &&
+       ball.y + ball.radius > player.y && ball.y - ball.radius < player.y + player.height) {
+        ball.dx *= -1;
+        ball.dy *= -1;
+    }
+
+    // Goal detection
+    if(ball.x + ball.radius > goal.x && ball.y > goal.y && ball.y < goal.y + goal.height) {
+        alert("Goal Scored!");
+        // Reset ball
+        ball.x = 300;
+        ball.y = 200;
+    }
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw player
+    ctx.fillStyle = player.color;
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+
+    // Draw ball
+    ctx.fillStyle = ball.color;
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Draw goal
+    ctx.fillStyle = goal.color;
+    ctx.fillRect(goal.x, goal.y, goal.width, goal.height);
+}
+
+function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
+</body>
+</html>

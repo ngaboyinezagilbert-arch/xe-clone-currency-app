@@ -1,0 +1,120 @@
+
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+header{ background-color: blue;
+         color: white;
+padding: 4px;}
+ nav{ background-color: lightblue; ;
+         color: black;
+padding: 10px;}
+.details{ background-color: lightgreen; ;
+         color: black;
+padding: 10px;
+text-align: center;}
+footer{ background-color: lightgreen; ;
+         color: black;
+padding: 10px;}
+         
+</style>
+</head>
+<body>
+<header>
+<img src="NGABO.PNG" height="150" width="100" style="display:inline;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<h1 style="color: green; display:inline;">
+  EXCHANGE WEB SYSTEM
+</h1>
+
+</header>
+<nav>
+<button><a href="home.html">HOME</a></button>&nbsp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<button><a href="FULL CONVERTER.html">FULL CONVERTER</a></button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<button><a href="HISTORY .html">HISTORY</a></button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<button><a href="CURRENCY DETAILS.html">CURRENCY DETAILS </a></butto>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<button><a href=" setting.html"> SETTINGS </a></button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</nav>
+<div class="details">
+<h1>ABOUT US</h1>
+<p>People who borrow money are expected to follow certain rules to ensure fairness and responsibility.
+ First, they should clearly understand and agree to the terms of the loan, including the amount, interest rate, and repayment schedule. 
+Borrowers must use the money for its intended purpose and make payments on time to avoid penalties or legal consequences.
+ It is also important to communicate honestly with the lender if any financial difficulties arise.
+ Respecting these guidelines helps maintain trust and promotes healthy financial relationships.
+</p>
+<h1> MU KINYARWANDA BISOBANURA KO:</h1><p>Abantu bagurizwa amafaranga bagomba gukurikiza amategeko runaka kugira ngo habeho uburinganire n’ubwizerane.
+ Icya mbere, bagomba kumva neza no kwemera ibisabwa byose by’inguzanyo, harimo umubare w’amafaranga bagurizwa, inyungu, n’igihe cyo kuyishyura.
+
+Uguzijwe agomba gukoresha ayo mafaranga mu cyo yayagenewe kandi akishyura ku gihe kugira ngo yirinde ibihano cyangwa ibibazo by’amategeko.
+ Ni ingenzi kandi kuvugisha ukuri no kuvugana neza n’ugurije igihe habayeho ibibazo by’amafaranga.
+
+Kubahiriza aya mabwiriza bituma habaho icyizere kandi bigafasha kubaka umubano mwiza mu by’imari.
+</p>
+</div>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Currency Converter</title>
+</head>
+<body style="background-color: lightblue">
+
+<h2>CHANGE MONEY AND BORROW (Real-time)</h2>
+
+<input type="number" id="amount" placeholder="ENTER MONEY" required />
+
+<select id="from">
+    <option value="USD">USD</option>
+    <option value="RWF">RWF</option>
+    <option value="EUR">EUR</option>
+</select>
+
+<select id="to">
+    <option value="RWF">RWF</option>
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+</select>
+
+<button onclick="convert()">CONVERT</button>
+
+<p id="result"></p>
+
+<script>
+async function convert() {
+    let amount = document.getElementById("amount").value;
+    let from = document.getElementById("from").value;
+    let to = document.getElementById("to").value;
+
+    let url = `https://api.exchangerate-api.com/v4/latest/${from}`;
+
+    let response = await fetch(url);
+    let data = await response.json();
+
+    let rate = data.rates[to];
+    let result = amount * rate;
+
+    document.getElementById("result").innerText =
+        amount + " " + from + " = " + result + " " + to;
+}
+</script>
+<footer> IF YOU GET QUESTION ,IDEA CALL:
+<p>&copy NGABO</p>
+<pre>
+CONTACT US: +250 728876936
+EMAIL: NGABO@gmail.com
+
+
+<img src="download.jpg" height="50" width="30">
+instagram:ngabo city thunder
+</pre>
+
+</footer> 
+</body>
+</html>

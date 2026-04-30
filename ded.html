@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Exchange History</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+            background: #f4f4f4;
+        }
+        h2 {
+            color: #333;
+        }
+        ul {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            list-style: none;
+        }
+        li {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        button {
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>📜 Currency Exchange History</h2>
+
+<button onclick="addSample()">Add Sample Data</button>
+<button onclick="clearHistory()">Clear History</button>
+
+<ul id="historyList"></ul>
+
+<script>
+// DISPLAY HISTORY
+function displayHistory() {
+    let history = JSON.parse(localStorage.getItem("exchangeHistory")) || [];
+    let list = document.getElementById("historyList");
+
+    list.innerHTML = "";
+
+    if (history.length === 0) {
+        list.innerHTML = "<li>No history available</li>";
+        return;
+    }
+
+    history.slice().reverse().forEach(item => {
+        let li = document.createElement("li");
+        li.textContent = `${item.amount} ${item.from} → ${item.result} ${item.to} (${item.date})`;
+        list.appendChild(li);
+    });
+}
+
+// CLEAR HISTORY
+function clearHistory() {
+    localStorage.removeItem("exchangeHistory");
+    displayHistory();
+}
+
+// ADD SAMPLE DATA (for testing)
+function addSample() {
+    let history = JSON.parse(localStorage.getItem("exchangeHistory")) || [];
+
+    let sample = {
+        amount: 100,
+        from: "USD",
+        to: "RWF",
+        result: 130000,
+        date: new Date().toLocaleString()
+    };
+
+    history.push(sample);
+    localStorage.setItem("exchangeHistory", JSON.stringify(history));
+
+    displayHistory();
+}
+
+// LOAD ON START
+window.onload = displayHistory;
+</script>
+
+</body>
+</html>

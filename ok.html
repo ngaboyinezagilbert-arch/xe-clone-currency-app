@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Exchange Web System</title>
+
+<style>
+body{
+    margin:0;
+    font-family: Arial;
+}
+
+/* HEADER */
+header{
+    background-color: blue;
+    color: white;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+}
+
+header h1{
+    margin-left: 20px;
+    color: lime;
+}
+
+/* NAV */
+nav{
+    background-color: lightblue;
+    padding: 10px;
+    text-align: center;
+}
+
+nav a{
+    margin: 15px;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
+/* SECTIONS */
+section{
+    padding: 20px;
+}
+
+.details{
+    background-color: lightgreen;
+    text-align: center;
+}
+
+/* CONVERTER */
+.converter{
+    background-color: lightblue;
+}
+
+/* FOOTER */
+footer{
+    background-color: lightgreen;
+    padding: 15px;
+    text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header id="home">
+<img src="NGABO.PNG" width="100" height="100">
+<h1>EXCHANGE WEB SYSTEM</h1>
+</header>
+
+<!-- NAVIGATION -->
+<nav>
+<a href="#home">HOME</a>
+<a href="#converter">CONVERTER</a>
+<a href="#history">HISTORY</a>
+<a href="#about">ABOUT</a>
+<a href="#settings">SETTINGS</a>
+</nav>
+
+<!-- ABOUT SECTION -->
+<section id="about" class="details">
+<h2>ABOUT US</h2>
+
+<p>
+People who borrow money must follow rules like repayment time, interest, and proper usage of money.
+</p>
+
+<h3>MU KINYARWANDA</h3>
+
+<p>
+Abantu bagurizwa amafaranga bagomba gukurikiza amategeko...
+</p>
+</section>
+
+<!-- CONVERTER -->
+<section id="converter" class="converter">
+<h2>CHANGE MONEY (REAL TIME)</h2>
+
+<input type="number" id="amount" placeholder="Enter amount">
+
+<select id="from">
+    <option value="USD">USD</option>
+    <option value="RWF">RWF</option>
+    <option value="EUR">EUR</option>
+</select>
+
+<select id="to">
+    <option value="RWF">RWF</option>
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+</select>
+
+<button onclick="convert()">CONVERT</button>
+
+<p id="result"></p>
+</section>
+
+<!-- HISTORY -->
+<section id="history">
+<h2>HISTORY</h2>
+<p id="historyList">No history yet.</p>
+</section>
+
+<!-- SETTINGS -->
+<section id="settings">
+<h2>SETTINGS</h2>
+<p>You can later add dark mode, language, etc.</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+<p>CONTACT: +250 728876936</p>
+<p>EMAIL: NGABO@gmail.com</p>
+<p>Instagram: ngabo city thunder</p>
+<p>&copy; NGABO</p>
+</footer>
+
+<!-- SCRIPT -->
+<script>
+
+let history = [];
+
+async function convert(){
+    let amount = document.getElementById("amount").value;
+    let from = document.getElementById("from").value;
+    let to = document.getElementById("to").value;
+
+    if(amount === ""){
+        alert("Enter amount first!");
+        return;
+    }
+
+    let url = `https://api.exchangerate-api.com/v4/latest/${from}`;
+    let response = await fetch(url);
+    let data = await response.json();
+
+    let rate = data.rates[to];
+    let result = amount * rate;
+
+    let text = `${amount} ${from} = ${result.toFixed(2)} ${to}`;
+
+    document.getElementById("result").innerText = text;
+
+    // save history
+    history.push(text);
+    document.getElementById("historyList").innerHTML =
+        history.map(h => `<li>${h}</li>`).join("");
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html>
+<head><body style="background-color: lightblue;"><form>
+    <input type="number" placeholder="enter amount"><br><br>
+FROM:<select class="country">
+    <option value="r">RWA</option>
+     <option value="u">USA</option> 
+     <option value="e">ENG</option>
+      <option value="T">TANZ</option>
+</select><br><br>
+TO:
+<select class="country">
+    <option value="r">RWF</option>
+     <option value="u">$DOLLARS</option> 
+     <option value="e">EURO</option>
+      <option value="T">SHRING</option>
+</select><br><br>
+
+    <button>CONVERT</button>
+
+<script>
+function convert() {
+    let amount = document.getElementById("amount").value;
+    let from = document.getElementById("from").value;
+    let to = document.getElementById("to").value;
+
+    
+    let rates = {
+        "RWF": 1,
+        "USD": 0.0008,
+        "EUR": 0.0007
+    };
+
+    let result = amount * (rates[to] / rates[from]);
+
+    document.getElementById("result").innerText = "Igisubizo: " + result + " " + to;
+}
+</script>
+</form>
+</body>
+</html> 

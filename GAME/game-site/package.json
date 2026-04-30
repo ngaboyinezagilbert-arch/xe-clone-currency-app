@@ -1,0 +1,57 @@
+<template>
+  <div class="gallery">
+    <h1>Wallpaper Gallery</h1>
+
+    <div class="grid">
+      <div v-for="img in images" :key="img" class="card">
+        <img :src="img" />
+        <a :href="img" download>
+          <button>Download</button>
+        </a>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+const images = [
+  "https://picsum.photos/300/200?1",
+  "https://picsum.photos/300/200?2",
+  "https://picsum.photos/300/200?3",
+  "https://picsum.photos/300/200?4"
+]
+</script>
+
+<style scoped>
+.gallery {
+  padding: 20px;
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: #1e293b;
+  padding: 10px;
+  border-radius: 12px;
+}
+
+img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+button {
+  margin-top: 10px;
+  padding: 8px 15px;
+  border: none;
+  background: #22c55e;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+</style>

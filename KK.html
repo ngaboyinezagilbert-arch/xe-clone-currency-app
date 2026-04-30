@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Currency Converter</title>
+</head>
+<body>
+
+<h2>Hindura Amafaranga (Real-time)</h2>
+
+<input type="number" id="amount" placeholder="Andika amafaranga">
+
+<select id="from">
+    <option value="USD">USD</option>
+    <option value="RWF">RWF</option>
+    <option value="EUR">EUR</option>
+</select>
+
+<select id="to">
+    <option value="RWF">RWF</option>
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+</select>
+
+<button onclick="convert()">Hindura</button>
+
+<p id="result"></p>
+
+<script>
+async function convert() {
+    let amount = document.getElementById("amount").value;
+    let from = document.getElementById("from").value;
+    let to = document.getElementById("to").value;
+
+    let url = `https://api.exchangerate-api.com/v4/latest/${from}`;
+
+    let response = await fetch(url);
+    let data = await response.json();
+
+    let rate = data.rates[to];
+    let result = amount * rate;
+
+    document.getElementById("result").innerText =
+        amount + " " + from + " = " + result + " " + to;
+}
+</script>
+
+</body>
+</html>

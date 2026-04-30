@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Football Game with Pass & Shoot</title>
+    <style>
+        canvas {
+            background: green;
+            display: block;
+            margin: auto;
+            border: 2px solid black;
+        }
+        #controls {
+            text-align: center;
+            margin-top: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="gameCanvas" width="800" height="500"></canvas>
+
+<div id="controls">
+    <button onclick="shootBall()">Shoot</button>
+    <button onclick="passBall()">Pass</button>
+</div>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+// Ball
+let ball = { x: 400, y: 250, radius: 10, color: "white", dx: 2, dy: 2 };
+
+// Players
+let team1 = [];
+let team2 = [];
+const playerWidth = 20;
+const playerHeight = 20;
+
+// Create team1 (Blue) controlled by player
+for(let i=0; i<11; i++){
+    team1.push({ 
+        x: 50 + (i%4)*50, 
+        y: 50 + (i%5)*80, 
+        width: playerWidth, 
+        height: playerHeight, 
+        color: "blue", 
+        speed: 5 
+    });
+}
+
+// Create team2 (Red) AI
+for(let i=0; i<11; i++){
+    team2.push({ 
+        x: 650 - (i%4)*50, 
+        y: 50 + (i%5)*80, 
+        width: playerWidth, 
+        height: playerHeight, 
+        color: "red", 
+        speed: 2
+    });
+}
+
+// Goals
+let goal1 = { x: 0, y: 200, width: 30, height: 100, color: "yellow" };
+let goal2 = { x: 770, y: 200, width: 30, height: 100, color: "yellow" };
+
+// Keyboard input for team1 players
+let keys = {};
+document.addEventListener("keydown", (e) => keys[e.key] = true);
+document.addEventListener("keyup", (e) => keys[e.key] = false);
+
+// Move a player
+function movePlayer(player, upKey, downKey, leftKey, rightKey) {
+    if(keys[upKey] && player.y > 0) player.y -= player.speed;
+    if(keys[downKey] && player.y + player.height < canvas.height) player.y += player.speed;
+    if(keys[leftKey] && player.x > 0) player.x -= player.speed;
+    if(keys[rightKey] && player.x + player.width < canvas.width) player.x += player.speed;
+}
+
+// Pass ball to nearest teammate
+function passBall() {
+    let player = team1[0]; // first player controls pass
+    // Find nearest teammate
+    let nearest = team1[1];
+    let minDist = Math.hypot(player.x - nearest.x, player.y - nearest.y);
+    for(let i=1; i<team1.length; i++){
+        let p = team1[i];
+        let dist = Math.hypot(player.x - p.x, player.y - p.y);
+        if(dist < minDist){
+            minDist = dist;
+            nearest = p;
+        }
+    }
+    // Set ball velocity toward nearest teammate
+    let dx = nearest.x - player.x;
+    let dy = nearest.y - player.y;
+    let length = Math.sqrt(dx*dx + dy*dy);
+    ball.dx = dx / length * 5; // slower pass
+    ball.dy = dy / length * 5;
+}
+
+// Shoot ball forward
+function shootBall() {
+    let player = team1[0]; // first player controls shoot
+    // Shoot toward goal2
+    let dx = goal2.x - player.x;
+    let dy = (goal2.y + goal2.height/2) - player.y;
+    let length = Math.sqrt(dx*dx + dy*dy);
+    ball.dx = dx / length * 10; // fast shoot
+    ball.dy = dy / length * 10;
+}
+
+function update() {
+    // Move first 3 players in team1 using different keys
+    movePlayer(team1[0], "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"); // arrows
+    movePlayer(team1[1], "w", "s", "a", "d"); // WASD
+    movePlayer(team1[2], "i", "k", "j", "l"); // IJKL
+
+    // AI movement for team2 players toward ball
+    team2.forEach(p => {
+        if(ball.x > p.x) p.x += p.speed;
+        if(ball.x < p.x) p.x -= p.speed;
+        if(ball.y > p.y) p.y += p.speed;
+        if(ball.y < p.y) p.y -= p.speed;
+    });
+
+    // Ball movement
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+
+    // Bounce off top & bottom walls
+    if(ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) ball.dy *= -1;
+
+    // Bounce off side walls (excluding goals)
+    if(ball.x - ball.radius < goal1.width && !(ball.y > goal1.y && ball.y < goal1.y + goal1.height)) ball.dx *= -1;
+    if(ball.x + ball.radius > goal2.x && !(ball.y > goal2.y && ball.y < goal2.y + goal2.height)) ball.dx *= -1;
+
+    // Collision with all players
+    [...team1, ...team2].forEach(p => {
+        if(ball.x + ball.radius > p.x && ball.x - ball.radius < p.x + p.width &&
+           ball.y + ball.radius > p.y && ball.y - ball.radius < p.y + p.height) {
+            ball.dx *= -1;
+            ball.dy *= -1;
+        }
+    });
+
+    // Goal detection
+    if(ball.x - ball.radius <= goal1.x + goal1.width && ball.y > goal1.y && ball.y < goal1.y + goal1.height) {
+        alert("Team Red Scored!");
+        ball.x = 400; ball.y = 250;
+    }
+    if(ball.x + ball.radius >= goal2.x && ball.y > goal2.y && ball.y < goal2.y + goal2.height) {
+        alert("Team Blue Scored!");
+        ball.x = 400; ball.y = 250;
+    }
+}
+
+function drawField() {
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 2;
+
+    // Outer boundary
+    ctx.strokeRect(0,0,canvas.width,canvas.height);
+
+    // Center line
+    ctx.beginPath();
+    ctx.moveTo(canvas.width/2,0);
+    ctx.lineTo(canvas.width/2,canvas.height);
+    ctx.stroke();
+
+    // Center circle
+    ctx.beginPath();
+    ctx.arc(canvas.width/2, canvas.height/2, 50, 0, Math.PI*2);
+    ctx.stroke();
+
+    // Goals
+    ctx.fillStyle = goal1.color;
+    ctx.fillRect(goal1.x, goal1.y, goal1.width, goal1.height);
+
+    ctx.fillStyle = goal2.color;
+    ctx.fillRect(goal2.x, goal2.y, goal2.width, goal2.height);
+}
+
+function drawPlayers() {
+    [...team1, ...team2].forEach(p => {
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, p.width, p.height);
+    });
+}
+
+function drawBall() {
+    ctx.fillStyle = ball.color;
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2);
+    ctx.fill();
+}
+
+function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    drawField();
+    drawPlayers();
+    drawBall();
+}
+
+function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
+</body>
+</html>

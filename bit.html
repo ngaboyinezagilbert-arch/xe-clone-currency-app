@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+
+header{
+    background-color: blue;
+    color: white;
+    padding: 10px;
+}
+
+nav{
+    background-color: lightblue;
+    padding: 10px;
+}
+
+nav a{
+    margin: 20px;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
+.details{
+    background-color: lightgreen;
+    padding: 10px;
+    text-align: center;
+}
+
+section{
+    padding: 20px;
+}
+
+footer{
+    background-color: lightgreen;
+    padding: 10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header id="home">
+<img src="NGABO.PNG" height="150" width="100" style="display:inline;">
+<h1 style="color: green; display:inline;">
+EXCHANGE WEB SYSTEM
+</h1>
+</header>
+
+<!-- NAVIGATION (CONNECTED) -->
+<nav>
+<a href="#home">HOME</a>
+<a href="#about">ABOUT</a>
+<a href="#converter">CONVERTER</a>
+<a href="#history">HISTORY</a>
+<a href="#settings">SETTINGS</a>
+</nav>
+
+<!-- ABOUT -->
+<section id="about" class="details">
+
+<h1>ABOUT US</h1>
+
+<p>
+People who borrow money are expected to follow certain rules to ensure fairness and responsibility. First, they should clearly understand and agree to the terms of the loan, including the amount, interest rate, and repayment schedule. Borrowers must use the money for its intended purpose and make payments on time to avoid penalties or legal consequences. It is also important to communicate honestly with the lender if any financial difficulties arise. Respecting these guidelines helps maintain trust and promotes healthy financial relationships.
+</p>
+
+<h1>MU KINYARWANDA BISOBANURA KO:</h1>
+
+<p>
+Abantu bagurizwa amafaranga bagomba gukurikiza amategeko runaka kugira ngo habeho uburinganire n’ubwizerane. Icya mbere, bagomba kumva neza no kwemera ibisabwa byose by’inguzanyo, harimo umubare w’amafaranga bagurizwa, inyungu, n’igihe cyo kuyishyura. Uguzijwe agomba gukoresha ayo mafaranga mu cyo yayagenewe kandi akishyura ku gihe kugira ngo yirinde ibihano cyangwa ibibazo by’amategeko. Ni ingenzi kandi kuvugisha ukuri no kuvugana neza n’ugurije igihe habayeho ibibazo by’amafaranga. Kubahiriza aya mabwiriza bituma habaho icyizere kandi bigafasha kubaka umubano mwiza mu by’imari.
+</p>
+
+</section>
+
+<!-- CONVERTER -->
+<section id="converter" style="background-color: lightblue;">
+
+<h2>CHANGE MONEY AND BORROW (Real-time)</h2>
+
+<input type="number" id="amount" placeholder="ENTER MONEY">
+
+<select id="from">
+    <option value="USD">USD</option>
+    <option value="RWF">RWF</option>
+    <option value="EUR">EUR</option>
+</select>
+
+<select id="to">
+    <option value="RWF">RWF</option>
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+</select>
+
+<button onclick="convert()">CONVERT</button>
+
+<p id="result"></p>
+
+</section>
+
+<!-- HISTORY -->
+<section id="history">
+
+<h2>HISTORY</h2>
+<ul id="historyList"></ul>
+
+</section>
+
+<!-- SETTINGS -->
+<section id="settings">
+
+<h2>SETTINGS</h2>
+<p>Settings page ready for future features.</p>
+
+</section>
+
+<!-- FOOTER -->
+<footer>
+
+<p>&copy NGABO</p>
+
+<pre>
+CONTACT US: +250 728876936
+EMAIL: NGABO@gmail.com
+instagram: ngabo city thunder
+</pre>
+
+</footer>
+
+<!-- SCRIPT (HISTORY + CONVERTER) -->
+<script>
+
+let history = [];
+
+async function convert() {
+
+    let amount = document.getElementById("amount").value;
+    let from = document.getElementById("from").value;
+    let to = document.getElementById("to").value;
+
+    if(amount === ""){
+        alert("Enter amount first!");
+        return;
+    }
+
+    let url = `https://api.exchangerate-api.com/v4/latest/${from}`;
+
+    let response = await fetch(url);
+    let data = await response.json();
+
+    let rate = data.rates[to];
+    let result = amount * rate;
+
+    let text = `${amount} ${from} = ${result.toFixed(2)} ${to}`;
+
+    document.getElementById("result").innerText = text;
+
+    // 🔥 ADD TO HISTORY AUTOMATICALLY
+    history.push(text);
+
+    document.getElementById("historyList").innerHTML =
+        history.map(h => `<li>${h}</li>`).join("");
+}
+
+</script>
+
+</body>
+</html>

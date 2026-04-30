@@ -1,0 +1,310 @@
+{
+  "name": "game-site",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.5.25"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.2",
+    "vite": "^8.0.0-beta.13"
+  },
+  "overrides": {
+    "vite": "^8.0.0-beta.13"
+  }
+}
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [vue()],
+})
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>game-site</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+import { createApp } from 'vue'
+import './style.css'
+import App from './App.vue'
+
+createApp(App).mount('#app')
+<script setup>
+import HelloWorld from './components/HelloWorld.vue'
+</script>
+
+<template>
+  <div>
+    <a href="https://vite.dev" target="_blank">
+      <img src="/vite.svg" class="logo" alt="Vite logo" />
+    </a>
+    <a href="https://vuejs.org/" target="_blank">
+      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
+    </a>
+  </div>
+  <HelloWorld msg="Vite + Vue" />
+</template>
+
+<style scoped>
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.vue:hover {
+  filter: drop-shadow(0 0 2em #42b883aa);
+}
+</style>
+import { createRouter, createWebHistory } from &quot;vue-router&quot;;
+
+import HomeView from &quot;../views/HomeView.vue&quot;;
+import GameView from &quot;../views/GameView.vue&quot;;
+import AboutView from &quot;../views/AboutView.vue&quot;;
+import NotFoundView from &quot;../views/NotFoundView.vue&quot;;
+
+const routes = [
+  { path: &quot;/&quot;, name: &quot;home&quot;, component: HomeView },
+  { path: &quot;/game&quot;, name: &quot;game&quot;, component: GameView },
+  { path: &quot;/about&quot;, name: &quot;about&quot;, component: AboutView },
+  { path: &quot;/:pathMatch(.)&quot;, name: &quot;notfound&quot;, component: NotFoundView }
+];
+
+export default createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes
+});
+``import { defineStore } from &quot;pinia&quot;;
+
+const BESTKEY = &quot;bubblepopbestScorev1&quot;;
+
+function loadBest() {
+
+  const v = Number(localStorage.getItem(BESTKEY));
+  return Number.isFinite(v) ? v : 0;
+}
+
+function saveBest(v) {
+  localStorage.setItem(BEST_KEY, String(v));
+}
+
+export const useGameStore = defineStore(&quot;game&quot;, {
+  state: () =&gt; ({
+    status: &quot;idle&quot;, // idle | running | paused | gameover
+    score: 0,
+    bestScore: loadBest(),
+    lives: 3,
+    level: 1,
+    difficulty: &quot;normal&quot; // easy | normal | hard
+  }),
+
+  getters: {
+    isRunning: (s) =&gt; s.status === &quot;running&quot;,
+    isPaused: (s) =&gt; s.status === &quot;paused&quot;,
+    isGameOver: (s) =&gt; s.status === &quot;gameover&quot;
+  },
+
+  actions: {
+    setDifficulty(d) {
+      this.difficulty = d;
+
+    },
+    startNewGame() {
+      this.score = 0;
+      this.lives = 3;
+      this.level = 1;
+      this.status = &quot;running&quot;;
+    },
+    pause() {
+      if (this.status === &quot;running&quot;) this.status = &quot;paused&quot;;
+    },
+    resume() {
+      if (this.status === &quot;paused&quot;) this.status = &quot;running&quot;;
+    },
+    addScore(points) {
+      this.score += points;
+      // level up every 500 points
+      this.level = Math.max(1, Math.floor(this.score / 500) + 1);
+
+      if (this.score &gt; this.bestScore) {
+        this.bestScore = this.score;
+        saveBest(this.bestScore);
+      }
+    },
+    loseLife() {
+      this.lives -= 1;
+      if (this.lives &lt;= 0) {
+        this.status = &quot;gameover&quot;;
+
+      }
+    },
+    endGame() {
+      this.status = &quot;gameover&quot;;
+      if (this.score &gt; this.bestScore) {
+        this.bestScore = this.score;
+        saveBest(this.bestScore);
+      }
+    }
+  }
+});&lt;template&gt;
+  &lt;section class=&quot;card&quot;&gt;
+    &lt;h1&gt;Pop the bubbles!&lt;/h1&gt;
+    &lt;p class=&quot;muted&quot;&gt;
+      Click/tap bubbles before they float away. Bigger bubbles are worth fewer points.
+    &lt;/p&gt;
+
+    &lt;div class=&quot;row gap&quot;&gt;
+      &lt;PrimaryButton @click=&quot;$router.push(&#39;/game&#39;)&quot;&gt;Play Now&lt;/PrimaryButton&gt;
+      &lt;PrimaryButton variant=&quot;ghost&quot; @click=&quot;$router.push(&#39;/about&#39;)&quot;&gt;How it
+works&lt;/PrimaryButton&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;preview&quot;&gt;
+      &lt;img src=&quot;../assets/bg.svg&quot; alt=&quot;background&quot; /&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import PrimaryButton from &quot;../components/PrimaryButton.vue&quot;;
+&lt;/script&gt;
+&lt;template&gt;
+  &lt;section class=&quot;card&quot;&gt;
+    &lt;div class=&quot;row space&quot;&gt;
+      &lt;div&gt;
+        &lt;h1&gt;Game&lt;/h1&gt;
+        &lt;p class=&quot;muted&quot;&gt;Difficulty affects bubble speed and spawn rate.&lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;row gap&quot;&gt;
+        &lt;select class=&quot;select&quot; v-model=&quot;difficulty&quot; :disabled=&quot;store.isRunning ||
+store.isPaused&quot;&gt;
+          &lt;option value=&quot;easy&quot;&gt;Easy&lt;/option&gt;
+          &lt;option value=&quot;normal&quot;&gt;Normal&lt;/option&gt;
+          &lt;option value=&quot;hard&quot;&gt;Hard&lt;/option&gt;
+        &lt;/select&gt;
+
+        &lt;PrimaryButton v-if=&quot;store.status === &#39;idle&#39; || store.isGameOver&quot; @click=&quot;start&quot;&gt;
+
+          Start
+        &lt;/PrimaryButton&gt;
+
+        &lt;PrimaryButton v-else-if=&quot;store.isRunning&quot; @click=&quot;store.pause()&quot;&gt;
+          Pause
+        &lt;/PrimaryButton&gt;
+
+        &lt;PrimaryButton v-else-if=&quot;store.isPaused&quot; @click=&quot;store.resume()&quot;&gt;
+          Resume
+        &lt;/PrimaryButton&gt;
+
+        &lt;PrimaryButton variant=&quot;ghost&quot; @click=&quot;reset&quot;&gt;
+          Reset
+        &lt;/PrimaryButton&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;HudBar
+      :score=&quot;store.score&quot;
+      :best=&quot;store.bestScore&quot;
+      :lives=&quot;store.lives&quot;
+      :level=&quot;store.level&quot;
+      :status=&quot;store.status&quot;
+    /&gt;
+
+    &lt;GameCanvas
+      :status=&quot;store.status&quot;
+
+      :level=&quot;store.level&quot;
+      :difficulty=&quot;store.difficulty&quot;
+      @scored=&quot;store.addScore&quot;
+      @missed=&quot;store.loseLife&quot;
+      @gameover=&quot;store.endGame&quot;
+    /&gt;
+
+    &lt;p v-if=&quot;store.isGameOver&quot; class=&quot;muted center&quot; style=&quot;margin-top: 12px;&quot;&gt;
+      Game over! Hit &lt;b&gt;Start&lt;/b&gt; to play again.
+    &lt;/p&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { computed, watch } from &quot;vue&quot;;
+import { useGameStore } from &quot;../store/gameStore.js&quot;;
+import GameCanvas from &quot;../components/GameCanvas.vue&quot;;
+import HudBar from &quot;../components/HudBar.vue&quot;;
+import PrimaryButton from &quot;../components/PrimaryButton.vue&quot;;
+
+const store = useGameStore();
+
+const difficulty = computed({
+  get: () =&gt; store.difficulty,
+  set: (v) =&gt; store.setDifficulty(v)
+});
+
+function start() {
+  store.startNewGame();
+}
+
+function reset() {
+  store.status = &quot;idle&quot;;
+  store.score = 0;
+  store.lives = 3;
+  store.level = 1;
+}
+
+// If difficulty changes while not playing, keep store updated (computed setter already
+does)
+watch(() =&gt; store.difficulty, () =&gt; {});
+</script>
+&lt;template&gt;
+  &lt;section class=&quot;card&quot;&gt;
+    &lt;h1&gt;About&lt;/h1&gt;
+    &lt;p&gt;
+      This is a tiny arcade game built with Vue 3. The game loop runs on a canvas using
+      &lt;code&gt;requestAnimationFrame&lt;/code&gt;.
+    &lt;/p&gt;
+
+    &lt;ul class=&quot;list&quot;&gt;
+      &lt;li&gt;Click/tap bubbles to pop them.&lt;/li&gt;
+      &lt;li&gt;Letting a bubble escape costs a life.&lt;/li&gt;
+
+      &lt;li&gt;Level increases with score, increasing difficulty over time.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;PrimaryButton variant=&quot;ghost&quot;
+@click=&quot;$router.push(&#39;/game&#39;)&quot;&gt;Play&lt;/PrimaryButton&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import PrimaryButton from &quot;../components/PrimaryButton.vue&quot;;
+&lt;/script&gt;
+&lt;template&gt;
+  &lt;section class=&quot;card center&quot;&gt;
+    &lt;h1&gt;404&lt;/h1&gt;
+    &lt;p class=&quot;muted&quot;&gt;That page doesn&#39;t exist.&lt;/p&gt;
+    &lt;PrimaryButton @click=&quot;$router.push(&#39;/&#39;)&quot;&gt;Go Home&lt;/PrimaryButton&gt;
+  &lt;/section&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import PrimaryButton from &quot;../components/PrimaryButton.vue&quot;;
+&lt;/script&gt;

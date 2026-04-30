@@ -1,0 +1,31 @@
+{
+      &quot;name&quot;: &quot;bubble-game-vue&quot;,
+      &quot;private&quot;: true,
+      &quot;version&quot;: &quot;1.0.0&quot;,
+      &quot;type&quot;: &quot;module&quot;,
+      &quot;scripts&quot;: {
+        &quot;dev&quot;: &quot;vite&quot;,
+        &quot;build&quot;: &quot;vite build&quot;,
+        &quot;preview&quot;: &quot;vite preview&quot;
+      },
+      &quot;dependencies&quot;: {
+    
+        &quot;pinia&quot;: &quot;^2.1.7&quot;,
+        &quot;vue&quot;: &quot;^3.4.0&quot;,
+        &quot;vue-router&quot;: &quot;^4.3.0&quot;
+      },
+      &quot;devDependencies&quot;: {
+        &quot;@vitejs/plugin-vue&quot;: &quot;^5.1.0&quot;,
+        &quot;vite&quot;: &quot;^5.4.0&quot;
+      }
+    }
+    vite.config.js
+    import { defineConfig } from &quot;vite&quot;;
+    import vue from &quot;@vitejs/plugin-vue&quot;;
+    
+    export default defineConfig({
+      plugins: [vue()],
+      server: {
+        open: true
+      }
+    });
